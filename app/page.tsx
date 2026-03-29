@@ -3,7 +3,7 @@
 // Next.js App Router에서 이 파일이 "/" 경로를 담당합니다.
 // ============================================================
 
-import { getDailyCosts, getServiceCosts, getBillingSummary } from "@/lib/fetchBillingData";
+import { getDailyCosts, getServiceCosts, getBillingSummary } from "../lib/fetchBillingData";
 import Header from '../components/Header';
 import SummaryCard from '../components/SummaryCard';
 import DailyCostChart from '../components/DailyCostChart';
