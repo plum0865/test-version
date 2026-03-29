@@ -4,10 +4,10 @@
 // ============================================================
 
 import { getDailyCosts, getServiceCosts, getBillingSummary } from "@/lib/fetchBillingData";
-import Header from "@/components/Header";
-import SummaryCard from "@/components/SummaryCard";
-import DailyCostChart from "@/components/DailyCostChart";
-import ServicePieChart from "@/components/ServicePieChart";
+import Header from '@/components/Header';
+import SummaryCard from '@/components/SummaryCard';
+import DailyCostChart from '@/components/DailyCostChart';
+import ServicePieChart from '@/components/ServicePieChart';
 
 // 서버 컴포넌트 (데이터 fetching은 서버에서)
 export default async function DashboardPage() {
