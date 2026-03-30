@@ -2,26 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tailwind가 안 먹힐 때를 대비한 강제 스타일링 */
 :root {
-  --foreground-rgb: 255, 255, 255;
+  --background: #020617;
+  --foreground: #f8fafc;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background-color: #020617; /* 강제로 어두운 배경색 지정 */
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+  font-family: sans-serif;
   margin: 0;
   padding: 0;
 }
 
-/* 아래는 차트와 카드가 안 보일 때를 대비한 강제 스타일링입니다 */
+/* 요약 카드 가로 정렬 강제 적용 */
 .grid {
   display: grid !important;
+  gap: 1.5rem !important;
 }
 
-.rounded-2xl {
+@media (min-width: 768px) {
+  .md\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+/* 카드 박스 디자인 강제 적용 */
+.bg-slate-800\/50, .bg-slate-800\/60 {
+  background-color: rgba(30, 41, 59, 0.7) !important;
+  border: 1px solid rgba(71, 85, 105, 0.5) !important;
   border-radius: 1rem !important;
+  padding: 1.5rem !important;
 }
 
-.bg-slate-800\/60 {
-  background-color: rgba(30, 41, 59, 0.6) !important;
-}
+/* 텍스트 색상 및 크기 강제 적용 */
+.text-3xl { font-size: 1.875rem !important; line-height: 2.25rem !important; }
+.font-bold { font-weight: 700 !important; }
+.text-slate-400 { color: #94a3b8 !important; }
+.text-white { color: #ffffff !important; }
+
+/* 테이블 정렬 */
+table { width: 100% !important; border-collapse: collapse !important; }
+th, td { padding: 0.75rem !important; text-align: left !important; border-bottom: 1px solid rgba(71, 85, 105, 0.3) !important; }
+.text-right { text-align: right !important; }
