@@ -1,45 +1,54 @@
-const SPREADSHEET_ID = '여기에_복사한_시트_ID를_넣으세요'; // 시트 ID로 교체!!
+const SPREADSHEET_ID = 'https://docs.google.com/spreadsheets/d/1FBegzWOSgYkQIopTk5AzoMHkWsYdMymDq1LcmvtLScY/edit?gid=0'; 
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json`;
 
 async function fetchSheetData() {
-  const response = await fetch(SHEET_URL);
-  const text = await response.text();
-  // 구글 시트 특유의 JSON 형식을 정리하는 코드입니다.
-  const json = JSON.parse(text.substring(47).slice(0, -2));
-  return json.table.rows;
+  try {
+    const response = await fetch(SHEET_URL);
+    const text = await response.text();
+    
+    // 데이터가 정상적인지 확인 (구글 시트 응답은 항상 이 문구로 시작함)
+    if (!text.includes('google.visualization.Query.setResponse')) {
+        throw new Error("시트가 공개되지 않았거나 ID가 틀립니다.");
+    }
+
+    const jsonText = text.substring(47).slice(0, -2);
+    const json = JSON.parse(jsonText);
+    return json.table.rows;
+  } catch (e) {
+    console.error(e);
+    return []; // 에러 시 빈 배열 반환
+  }
 }
 
-// 1. 일별 지출 현황 가져오기
+// 1. 일별 지출 현황 (데이터 없을 시 가짜 데이터라도 보여줌)
 export async function getDailyCosts() {
   const rows = await fetchSheetData();
-  // 시트의 A열(날짜), B열(금액)을 가져온다고 가정합니다.
+  if (rows.length === 0) return [{ date: '데이터 없음', amount: 0 }];
   return rows.map((row: any) => ({
     date: row.c[0]?.v || '',
     amount: row.c[1]?.v || 0
   }));
 }
 
-// 2. 항목별 지출 비율 가져오기
+// 2. 항목별 지출 비율
 export async function getServiceCosts() {
   const rows = await fetchSheetData();
-  // 시트의 C열(항목), D열(금액)을 가져온다고 가정합니다.
+  if (rows.length === 0) return [{ name: '데이터 없음', value: 1 }];
   return rows.map((row: any) => ({
     name: row.c[2]?.v || '기타',
     value: row.c[3]?.v || 0
   }));
 }
 
-// 3. 상단 요약 정보 계산하기
+// 3. 상단 요약 정보
 export async function getBillingSummary() {
   const rows = await fetchSheetData();
-  
-  // 전체 금액 합계 계산 로직 (B열의 모든 값을 더함)
-  const total = rows.reduce((acc: number, row: any) => acc + (row.c[1]?.v || 0), 0);
+  const total = rows.reduce((acc: number, row: any) => acc + (Number(row.c[1]?.v) || 0), 0);
   
   return {
     totalCost: total,
-    monthlyForecast: total * 1.1, // 예시: 현재 지출의 110% 예측
-    activeServices: new Set(rows.map((r: any) => r.c[2]?.v)).size, // 항목 수
-    previousMonthComparison: -5.4 // 전월 대비 (시트에 있다면 가져오기 가능)
+    monthlyForecast: total,
+    activeServices: rows.length > 0 ? new Set(rows.map((r: any) => r.c[2]?.v)).size : 0,
+    previousMonthComparison: 0
   };
 }
