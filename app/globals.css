@@ -4,17 +4,24 @@
 
 :root {
   --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 2, 6, 23;
-  --background-end-rgb: 15, 23, 42;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-  min-height: 100vh;
+  background-color: #020617; /* 강제로 어두운 배경색 지정 */
+  margin: 0;
+  padding: 0;
+}
+
+/* 아래는 차트와 카드가 안 보일 때를 대비한 강제 스타일링입니다 */
+.grid {
+  display: grid !important;
+}
+
+.rounded-2xl {
+  border-radius: 1rem !important;
+}
+
+.bg-slate-800\/60 {
+  background-color: rgba(30, 41, 59, 0.6) !important;
 }
