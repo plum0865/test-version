@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "./globals.css"; // 디자인 엔진(Tailwind)을 불러오는 핵심 줄!
+import "./globals.css"; // ⭐ 이 줄이 반드시 있어야 디자인이 입혀집니다!
 
 export const metadata: Metadata = {
   title: "마케터의 밤 지출 현황",
@@ -13,7 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      {/* className="bg-slate-950"를 추가하여 전체 배경색을 어둡게 고정합니다 */}
+      {/* 아래 body 태그에 className이 있는지 꼭 확인하세요! */}
       <body className="bg-slate-950 antialiased">
         {children}
       </body>
