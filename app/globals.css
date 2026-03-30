@@ -1,8 +1,20 @@
-/* 모든 내용을 지우고 이것만 남기세요 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 2, 6, 23;
+  --background-end-rgb: 15, 23, 42;
+}
+
 body {
-  margin: 0;
-  padding: 0;
-  background-color: #0f172a; /* 어두운 배경색 */
-  color: white;
-  font-family: sans-serif;
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  min-height: 100vh;
 }
