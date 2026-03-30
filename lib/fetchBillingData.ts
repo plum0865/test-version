@@ -1,73 +1,26 @@
-// ============================================================
-// fetchBillingData.ts
-// 데이터를 가져오는 함수들을 모아둔 파일입니다.
-//
-// 현재: mockData.ts의 가짜 데이터를 반환
-// 나중에: 아래 TODO 부분을 BigQuery API 호출로 교체하세요.
-// ============================================================
+// 구글 시트 데이터를 JSON으로 변환해서 가져오는 함수 예시
+export async function getBillingSummary() {
+  const SPREADSHEET_ID = 'https://docs.google.com/spreadsheets/d/1FBegzWOSgYkQIopTk5AzoMHkWsYdMymDq1LcmvtLScY/edit?gid=0#gid=0';
+  const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json`;
 
-import {
-  dailyCostData,
-  serviceCostData,
-  billingSummary,
-  type DailyCost,
-  type ServiceCost,
-  type BillingSummary,
-} from "./mockData";
-
-// ─────────────────────────────────────────
-// 일별 비용 데이터 가져오기
-// ─────────────────────────────────────────
-export async function getDailyCosts(): Promise<DailyCost[]> {
-  // TODO: BigQuery 연결 시 아래 주석을 해제하고 mock 데이터 반환을 삭제하세요.
-  //
-  // const { BigQuery } = await import("@google-cloud/bigquery");
-  // const bigquery = new BigQuery({ projectId: process.env.GCP_PROJECT_ID });
-  //
-  // const query = `
-  //   SELECT
-  //     DATE(usage_start_time) as date,
-  //     SUM(cost) as cost
-  //   FROM \`${process.env.BQ_DATASET}.${process.env.BQ_TABLE}\`
-  //   WHERE DATE(usage_start_time) >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
-  //   GROUP BY date
-  //   ORDER BY date ASC
-  // `;
-  //
-  // const [rows] = await bigquery.query(query);
-  // return rows.map(row => ({ date: row.date, cost: row.cost }));
-
-  // 현재는 가짜 데이터를 반환 (실제 API 호출처럼 약간의 딜레이 추가)
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  return dailyCostData;
+  try {
+    const response = await fetch(url);
+    const text = await response.text();
+    // 구글 시트 특유의 JSON 형식을 정리하는 과정이 필요합니다.
+    const json = JSON.parse(text.substr(47).slice(0, -2));
+    
+    // 시트의 첫 번째 줄(데이터)을 가져와서 요약 정보로 반환
+    const row = json.table.rows[0].c;
+    return {
+      totalCost: row[0].v, // A열: 총 비용
+      monthlyForecast: row[1].v, // B열: 예측 비용
+      activeServices: row[2].v, // C열: 서비스 수
+      previousMonthComparison: row[3].v // D열: 전월 대비
+    };
+  } catch (error) {
+    console.error("데이터 로드 실패:", error);
+    return { totalCost: 0, monthlyForecast: 0, activeServices: 0, previousMonthComparison: 0 };
+  }
 }
 
-// ─────────────────────────────────────────
-// 서비스별 비용 데이터 가져오기
-// ─────────────────────────────────────────
-export async function getServiceCosts(): Promise<ServiceCost[]> {
-  // TODO: BigQuery 연결 시 이 부분을 교체하세요.
-  //
-  // const query = `
-  //   SELECT
-  //     service.description as service,
-  //     SUM(cost) as cost
-  //   FROM \`${process.env.BQ_DATASET}.${process.env.BQ_TABLE}\`
-  //   WHERE DATE(usage_start_time) >= DATE_TRUNC(CURRENT_DATE(), MONTH)
-  //   GROUP BY service
-  //   ORDER BY cost DESC
-  // `;
-
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  return serviceCostData;
-}
-
-// ─────────────────────────────────────────
-// 요약 정보 가져오기
-// ─────────────────────────────────────────
-export async function getBillingSummary(): Promise<BillingSummary> {
-  // TODO: BigQuery 연결 시 이 부분을 교체하세요.
-
-  await new Promise((resolve) => setTimeout(resolve, 200));
-  return billingSummary;
-}
+// 나머지 getDailyCosts, getServiceCosts 함수도 비슷한 방식으로 수정 가능합니다.
